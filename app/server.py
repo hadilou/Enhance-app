@@ -11,6 +11,8 @@ import base64
 import pdb
 from utils import *
 
+get_y_fn = lambda x: os.path.join(path_lbl, f'{x.stem}_groundtruth.png')
+
 def iou(input, targs, iou=True, eps=1e-8):
     "Dice coefficient metric for binary target. If iou=True, returns iou metric, classic for segmentation problems."
     n = targs.shape[0]
@@ -59,17 +61,39 @@ async def upload(request):
     img_bytes = await (data["file"].read())
 
     img = open_image(BytesIO(img_bytes))
-    x, y, z = img.data.shape
+    #x, y, z = img.data.shape
+    #
+    #max_size = 1000
+    #y_new, z_new = get_resize(y, z, max_size)
 
-    max_size = 1000
-    y_new, z_new = get_resize(y, z, max_size)
+    #data_bunch = (ImageImageList.from_folder(path).split_none().label_from_func(lambda x: x)
+     #     .transform(get_transforms(do_flip=False), size=(y_new,z_new), tfm_y=True)
+     #     .databunch(bs=2, no_check=True).normalize(imagenet_stats, do_y=True))
 
-    data_bunch = (ImageImageList.from_folder(path).split_none().label_from_func(lambda x: x)
-          .transform(get_transforms(do_flip=False), size=(y_new,z_new), tfm_y=True)
-          .databunch(bs=2, no_check=True).normalize(imagenet_stats, do_y=True))
+    #data_bunch.c = 2
+    # Classes (i.e. the possible values in the mask .png)
+    codes = ['0', '1']
 
-    data_bunch.c = 2
-    learn.data = data_bunch
+    src = (SegmentationItemList.from_folder(path=path)
+        .split_by_folder(train='train2', valid='valid2')
+        .label_from_func((get_y_fn), classes=codes))
+
+    ds_tfms = get_transforms(do_flip=True, flip_vert=True, max_rotate=180., max_zoom=1.1,
+                   max_lighting=0.13, max_warp=0, p_affine=0.75,
+                   p_lighting=0.75)
+    size = (224,224)
+    bs = 32
+    size = (224,224)
+    bs = 32
+    data = (src.transform(ds_tfms, size=size, tfm_y=True)
+        .databunch(bs=bs)
+        .normalize(imagenet_stats))
+    
+    #data = (src.transform(ds_tfms, size=size, tfm_y=True)
+    #    .databunch(bs=bs)
+    #   .normalize(imagenet_stats))
+    
+    learn.data = data
     _,img_hr,losses = learn.predict(img)
 
     im = Image(img_hr.clamp(0,1))

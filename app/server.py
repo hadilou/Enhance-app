@@ -30,7 +30,7 @@ export_file_name = 'model.8.30.pkl'
 classes = ['0','1']
 
 path = Path(__file__).parent
-path_lbl = path/'groundtruths'
+path_lbl = path/'Dataset/'groundtruths'
 templates = Jinja2Templates(directory='app/templates')
 app = Starlette()
 app.add_middleware(CORSMiddleware, allow_origins=['*'], allow_headers=['X-Requested-With', 'Content-Type'])

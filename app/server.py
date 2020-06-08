@@ -11,8 +11,20 @@ import base64
 import pdb
 from utils import *
 
+def iou(input, targs, iou=True, eps=1e-8):
+    "Dice coefficient metric for binary target. If iou=True, returns iou metric, classic for segmentation problems."
+    n = targs.shape[0]
+    input = input.argmax(dim=1).view(n,-1)
+    targs = targs.view(n,-1)
+    intersect = (input * targs).sum(dim=1).float()
+    union = (input+targs).sum(dim=1).float()
+    if not iou: l = 2. * intersect / union
+    else: l = intersect / (union-intersect+eps)
+    l[union == 0.] = 1.
+    return l.mean()
+
 export_file_url = 'https://www.dropbox.com/s/5x70oksyu3xyiqe/model.8.30?dl=1'
-export_file_name = 'export.pkl'
+export_file_name = 'model.8.30.pkl'
 classes = ['0','1']
 
 path = Path(__file__).parent
@@ -34,7 +46,6 @@ async def setup_learner():
     await download_file(export_file_url, path/'models'/export_file_name)
     defaults.device = torch.device('cpu')
     learn = load_learner(path/'models', export_file_name)
-    learn.metrics = ['dice']
     return learn
 
 loop = asyncio.get_event_loop()

@@ -11,9 +11,9 @@ import base64
 import pdb
 from utils import *
 
-export_file_url = 'https://www.dropbox.com/s/xlwwdf5zmz3ehvs/export.pkl?dl=0'
+export_file_url = 'https://www.dropbox.com/s/5x70oksyu3xyiqe/model.8.30?dl=1'
 export_file_name = 'export.pkl'
-classes = ['a', 'b', 'c']
+classes = ['0','1']
 
 path = Path(__file__).parent
 
@@ -56,7 +56,7 @@ async def upload(request):
           .transform(get_transforms(do_flip=False), size=(y_new,z_new), tfm_y=True)
           .databunch(bs=2, no_check=True).normalize(imagenet_stats, do_y=True))
 
-    data_bunch.c = 3
+    data_bunch.c = 2
     learn.data = data_bunch
     _,img_hr,losses = learn.predict(img)
 

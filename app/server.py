@@ -11,6 +11,8 @@ import base64
 import pdb
 from utils import *
 
+path = Path(__file__).parent
+path_lbl = path/'Dataset/'groundtruths'
 get_y_fn = lambda x: os.path.join(path_lbl, f'{x.stem}_groundtruth.png')
 
 def iou(input, targs, iou=True, eps=1e-8):
@@ -29,8 +31,6 @@ export_file_url = 'https://www.dropbox.com/s/5x70oksyu3xyiqe/model.8.30?dl=1'
 export_file_name = 'model.8.30.pkl'
 classes = ['0','1']
 
-path = Path(__file__).parent
-path_lbl = path/'Dataset/'groundtruths'
 templates = Jinja2Templates(directory='app/templates')
 app = Starlette()
 app.add_middleware(CORSMiddleware, allow_origins=['*'], allow_headers=['X-Requested-With', 'Content-Type'])

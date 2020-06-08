@@ -11,9 +11,9 @@ import base64
 import pdb
 from utils import *
 
-path = Path(__file__).parent/'Dataset'
+path = Path(__file__).parent
 
-path_lbl = path/'groundtruths'
+path_lbl = path/'Dataset/'groundtruths'
 
 get_y_fn = lambda x: os.path.join(path_lbl, f'{x.stem}_groundtruth.png')
 
@@ -76,7 +76,7 @@ async def upload(request):
     # Classes (i.e. the possible values in the mask .png)
     codes = ['0', '1']
 
-    src = (SegmentationItemList.from_folder(path=path)
+    src = (SegmentationItemList.from_folder(path=path/'Dataset')
         .split_by_folder(train='train', valid='valid')
         .label_from_func((get_y_fn), classes=codes))
 

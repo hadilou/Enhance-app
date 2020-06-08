@@ -11,8 +11,10 @@ import base64
 import pdb
 from utils import *
 
-path = Path(__file__).parent
+path = Path(__file__).parent/'Dataset'
+
 path_lbl = path/'Dataset/'groundtruths'
+
 get_y_fn = lambda x: os.path.join(path_lbl, f'{x.stem}_groundtruth.png')
 
 def iou(input, targs, iou=True, eps=1e-8):
@@ -74,7 +76,7 @@ async def upload(request):
     # Classes (i.e. the possible values in the mask .png)
     codes = ['0', '1']
 
-    src = (SegmentationItemList.from_folder(path=path/'Dataset')
+    src = (SegmentationItemList.from_folder(path=path)
         .split_by_folder(train='train', valid='valid')
         .label_from_func((get_y_fn), classes=codes))
 

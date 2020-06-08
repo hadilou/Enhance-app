@@ -13,7 +13,7 @@ from utils import *
 
 path = Path(__file__).parent
 
-path_lbl = path/'Dataset/'groundtruths'
+path_lbl = path/'Dataset'/'groundtruths'
 
 get_y_fn = lambda x: os.path.join(path_lbl, f'{x.stem}_groundtruth.png')
 

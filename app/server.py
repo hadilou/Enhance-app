@@ -30,7 +30,7 @@ export_file_name = 'model.8.30.pkl'
 classes = ['0','1']
 
 path = Path(__file__).parent
-
+path_lbl = path/'groundtruths'
 templates = Jinja2Templates(directory='app/templates')
 app = Starlette()
 app.add_middleware(CORSMiddleware, allow_origins=['*'], allow_headers=['X-Requested-With', 'Content-Type'])
@@ -74,8 +74,8 @@ async def upload(request):
     # Classes (i.e. the possible values in the mask .png)
     codes = ['0', '1']
 
-    src = (SegmentationItemList.from_folder(path=path)
-        .split_by_folder(train='train2', valid='valid2')
+    src = (SegmentationItemList.from_folder(path=path/'Dataset')
+        .split_by_folder(train='train', valid='valid')
         .label_from_func((get_y_fn), classes=codes))
 
     ds_tfms = get_transforms(do_flip=True, flip_vert=True, max_rotate=180., max_zoom=1.1,
